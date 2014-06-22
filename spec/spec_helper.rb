@@ -1,3 +1,5 @@
+require_relative "../src/tokenizer"
+
 RSpec.configure do |config|
   
   if config.files_to_run.one?
