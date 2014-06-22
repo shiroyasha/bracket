@@ -10,4 +10,13 @@ describe Tokenizer do
 
     expect(output).to eq(["(", "+", "1", "2", "3", ")"])
   end 
+
+  it "can tokenize nested srtuctures" do
+    input  = "(+ 1 2 (* 5 6 7) 3)"
+    output = tokenize(input)
+
+    expectation = ["(", "+", "1", "2", "(", "*", "5", "6", "7", ")", "3", ")"]
+
+    expect(output).to eq(expectation)
+  end 
 end
