@@ -1,5 +1,6 @@
 require_relative "../src/tokenizer"
 require_relative "../src/structurizer"
+require_relative "../src/classifier"
 
 RSpec.configure do |config|
   
