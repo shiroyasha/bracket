@@ -3,24 +3,24 @@ require_relative "../src/structurizer"
 require_relative "../src/classifier"
 require_relative "../src/evaluator"
 
+require "readline"
+
 class Repl
   def initialize
+    @line = ""
   end
 
   def run
     puts "Interactive bracket interpreter"
     puts "Bracket version 0.0.1-alpha"
-    puts "\n"
+    puts
 
     repl_loop
   end
 
   def repl_loop
-    while true do
-      print ">> "
-      input = $stdin.gets
-
-      puts evaluate(input)
+    while buf = Readline.readline(">> ", true) do
+      puts evaluate(buf)
     end
   end
 
