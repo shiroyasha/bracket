@@ -3,6 +3,8 @@ require_relative "../src/structurizer"
 require_relative "../src/classifier"
 require_relative "../src/evaluator"
 
+require_relative "helpers/evaluate"
+
 RSpec.configure do |config|
   
   if config.files_to_run.one?
