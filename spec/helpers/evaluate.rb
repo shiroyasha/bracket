@@ -4,5 +4,5 @@ def evaluate(input)
   tree = Classifier.new(structure).run
   result = Evaluator.new(tree).run
 
-  result
+  result[:value]
 end

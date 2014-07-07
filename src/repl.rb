@@ -3,11 +3,14 @@ require_relative "../src/structurizer"
 require_relative "../src/classifier"
 require_relative "../src/evaluator"
 
+require_relative "../src/kernel/kernel"
+
 require "readline"
 
 class Repl
   def initialize
     @line = ""
+    @env = stdlib
   end
 
   def run
@@ -20,7 +23,11 @@ class Repl
 
   def repl_loop
     while buf = Readline.readline(">> ", true) do
-      puts evaluate(buf)
+      begin
+        puts evaluate(buf)
+      rescue Exception => e
+        p e
+      end
     end
   end
 
@@ -28,7 +35,7 @@ class Repl
     tokens = Tokenizer.new(input).run
     structure = Structurizer.new(tokens).run
     tree = Classifier.new(structure).run
-    result = Evaluator.new(tree).run
+    result = Evaluator.new(tree, @env).run
 
     result
   end

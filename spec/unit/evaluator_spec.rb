@@ -12,7 +12,7 @@ describe Evaluator do
               ]
             }
 
-    expect(evaluate(input)).to eq(3) 
+    expect(evaluate(input)).to eq :type => :number, :value => 3
   end
 
   it "should calculate nested math expressions" do
@@ -27,6 +27,6 @@ describe Evaluator do
                {:type => :number, :value => 2}
             ]}
 
-    expect(evaluate(input)).to eq(24) 
+    expect(evaluate(input)).to eq :type => :number, :value => 24
   end
 end

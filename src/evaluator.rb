@@ -1,63 +1,63 @@
+require_relative "../src/kernel/kernel"
+
 class Evaluator
-  def initialize(input)
+  def initialize(input, stack = nil)
     @source = input
+    @stack = stack || stdlib
   end
 
   def run
-    evaluate(@source, [])
+    evaluate(@source, @stack)
   end
 
   private
 
-  def evaluate(input, env_stack)
-    env_stack << {}
-
+  def evaluate(input, env)
     if input[:type] == :structure
+      structure = input[:value]
+      
+      head = structure[0]
+      tail = structure[1..-1]
 
-      #head = evaluate input[:value][0], env_stack
-      head = input[:value][0][:value]
+      if head[:type] == :atom
 
-      if head == "let"
-        return define(input[:value][1..-1], env_stack)
-      end
-
-      tail = input[:value][1..-1].map { |el| evaluate el, env_stack }
-
-      return case head
-        when "+" then sum tail
-        when "*" then product tail
-        when "exit" then exit(1)
-        else raise "unrecognized symbol"
+        case head[:value]
+        when "def" then define(tail, env)
+        else call(head, tail, env)
         end
+
+      end
 
     else
       if input[:type] == :atom
-        return lookup(input[:value], env_stack)
+        lookup(input[:value], env)
       else
-        return input[:value]
+        input
       end
     end
-
-    env_stack.pop
   end
 
-  def sum(elements)
-    sum = 0
-    elements.each { |el| sum += el }
-    sum
+  def define(elements, env)
+    raise "Not enought arguments for define" if elements.length < 2
+    raise "Too many arguments for define" if elements.length > 2
+    
+    name = elements[0][:value]
+    what = evaluate(elements[1], env)
+
+    env[name] = what
   end
 
-  def product(elements)
-    sum = 1
-    elements.each { |el| sum *= el }
-    sum
+  def call(head, tail, env)
+    name = head[:value]
+
+    raise "no such function" if env[name] == nil
+    func = env[name]
+    arguments = tail.map { |el| evaluate(el, env) }
+
+    func.call(arguments)
   end
 
-  def define(elements, env_stack)
-    env_stack.last[elements[0]] = elements[1]
-  end
-
-  def lookup(element, env_stack)
-    env_stack[element]
+  def lookup(element, env)
+    env[element] if env[element]
   end
 end
