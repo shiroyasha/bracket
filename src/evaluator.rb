@@ -23,6 +23,7 @@ class Evaluator
 
         case head[:value]
         when "def" then define(tail, env)
+        when "fun" then define_fun(tail)
         else call(head, tail, env)
         end
 
@@ -47,14 +48,34 @@ class Evaluator
     env[name] = what
   end
 
+  def define_fun(elements)
+    { 
+      :type => :function, 
+      :arguments => elements[0], 
+      :value => Proc.new do |env|
+        result = elements[1..-1].map { |el| evaluate(el, env) }
+
+        result.last
+      end 
+    }
+  end
+
   def call(head, tail, env)
     name = head[:value]
 
     raise "no such function" if env[name] == nil
-    func = env[name]
+    func = env[name][:value]
+    
+    parameters = env[name][:arguments]
     arguments = tail.map { |el| evaluate(el, env) }
 
-    func.call(arguments)
+    parameters[:value].each_with_index do |el, i|
+      name = el[:value]
+
+      env[name] = arguments[i]
+    end
+
+    func.call(env)
   end
 
   def lookup(element, env)
