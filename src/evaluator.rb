@@ -1,4 +1,5 @@
 require_relative "../src/kernel/kernel"
+require_relative "../src/environment"
 
 class Evaluator
   def initialize(input, stack = nil)
@@ -22,8 +23,9 @@ class Evaluator
       if head[:type] == :atom
 
         case head[:value]
-        when "def" then define(tail, env)
-        when "fun" then define_fun(tail)
+        when "show" then env.lookup(tail[0])
+        when "def" then env.define(tail[0][:value], evaluate(tail[1], env) )
+        when "fun" then fun(tail)
         else call(head, tail, env)
         end
 
@@ -31,24 +33,14 @@ class Evaluator
 
     else
       if input[:type] == :atom
-        lookup(input[:value], env)
+        env.lookup input[:value]
       else
         input
       end
     end
   end
 
-  def define(elements, env)
-    raise "Not enought arguments for define" if elements.length < 2
-    raise "Too many arguments for define" if elements.length > 2
-    
-    name = elements[0][:value]
-    what = evaluate(elements[1], env)
-
-    env[name] = what
-  end
-
-  def define_fun(elements)
+  def fun(elements)
     { 
       :type => :function, 
       :arguments => elements[0], 
@@ -63,22 +55,20 @@ class Evaluator
   def call(head, tail, env)
     name = head[:value]
 
-    raise "no such function" if env[name] == nil
-    func = env[name][:value]
+    raise "no such function" if env.lookup(name) == nil
+    func = env.lookup(name)[:value]
     
-    parameters = env[name][:arguments]
+    parameters = env.lookup(name)[:arguments]
     arguments = tail.map { |el| evaluate(el, env) }
+
+    new_scope = Environment.new(env)
 
     parameters[:value].each_with_index do |el, i|
       name = el[:value]
 
-      env[name] = arguments[i]
+      new_scope.define name, arguments[i]
     end
 
-    func.call(env)
-  end
-
-  def lookup(element, env)
-    env[element] if env[element]
+    func.call(new_scope)
   end
 end

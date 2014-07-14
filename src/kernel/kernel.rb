@@ -1,23 +1,25 @@
 def stdlib(env={})
-  env["+"] = Proc.new do |elements|
-    result = elements.inject(0) do |sum, el|
-      raise "value error" unless el[:type] == :number
-      sum += el[:value]
-    end
+  env = Environment.new
+  
+#  env.define "+", Proc.new do |elements|
+#    result = elements.inject(0) do |sum, el|
+#      raise "value error" unless el[:type] == :number
+#      sum += el[:value]
+#    end
+#
+#    {:type => :number, :value => result}
+#  end
 
-    {:type => :number, :value => result}
-  end
+#  env.define "-", Proc.new do |elements|
+#    result = elements.inject(0) do |sum, el|
+#      raise "value error" unless el[:type] == :number
+#      sum += el[:value]
+#    end
 
-  env["-"] = Proc.new do |elements|
-    result = elements.inject(0) do |sum, el|
-      raise "value error" unless el[:type] == :number
-      sum += el[:value]
-    end
+#    {:type => :number, :value => result}
+#  end
 
-    {:type => :number, :value => result}
-  end
-
-  env["*"] = {
+  env.define "*", {
     :type => :function,
     :arguments => {:type => :structure, :value => 
                      [{:type => :atom, :value => "a"},
@@ -29,13 +31,16 @@ def stdlib(env={})
       #  sum *= el[:value]
       #end
 
-      {:type => :number, :value => env["a"][:value] * env["b"][:value]}
+      a = env.lookup("a")[:value]
+      b = env.lookup("b")[:value]
+
+      {:type => :number, :value => a * b }
      end
   }
 
-  env["exit"] = Proc.new do |elements|
-    exit
-  end
+#  env.define "exit", Proc.new do |elements|
+#    exit
+#  end
 
   env
 end
