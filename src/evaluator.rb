@@ -23,6 +23,7 @@ class Evaluator
       if head[:type] == :atom
 
         case head[:value]
+        when "if" then (evaluate(tail[0], env)[:value] == true ? evaluate(tail[1], env) : evaluate(tail[2], env))
         when "show" then env.lookup(tail[0])
         when "def" then env.define(tail[0][:value], evaluate(tail[1], env) )
         when "fun" then fun(tail)
@@ -31,12 +32,10 @@ class Evaluator
 
       end
 
+    elsif input[:type] == :atom
+      env.lookup input[:value]
     else
-      if input[:type] == :atom
-        env.lookup input[:value]
-      else
-        input
-      end
+      input
     end
   end
 

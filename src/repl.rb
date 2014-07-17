@@ -26,6 +26,7 @@ class Repl
       begin
         puts evaluate(buf)
       rescue Exception => e
+        puts e
         puts e.backtrace
       end
     end

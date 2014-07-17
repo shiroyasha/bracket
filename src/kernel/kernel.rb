@@ -38,6 +38,16 @@ def stdlib(env={})
      end
   }
 
+  env.define "true", {
+    :value => true,
+    :type => :boolean
+  }
+
+  env.define "false", {
+    :type => :boolean,
+    :value => false
+  }
+
 #  env.define "exit", Proc.new do |elements|
 #    exit
 #  end
