@@ -22,7 +22,7 @@ class Classifier
   end
 
   def find_class(element)
-    if element =~ /[1-9]([0-9]+)?/
+    if element =~ /([1-9]([0-9]+)?|0)/
       {:type => :number, :value => element.to_i}
     else
       {:type => :atom, :value => element}
